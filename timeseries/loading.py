@@ -6,6 +6,7 @@ import os
 import lzma
 import gzip
 import pandas as pd
+import dateutil.parser as parser
 
 
 ########################## Load Data #######################################################################
@@ -44,7 +45,7 @@ def load_cata(f_lid, f_sat, ind_lid):
                 ssh.append(float(data[1]))
                 corr.append(float(data[2]))
             except ValueError:
-                time2.append(dt.datetime.strptime(data[0] + " " + data[1], "%d-%b-%Y %H:%M:%S.%f"))
+                time2.append(parser.parse(data[0] + " " + data[1]))
                 ssh.append(float(data[2]))
                 corr.append(float(data[3]))
 
@@ -110,7 +111,7 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
                 backscatter.append(float(data[3]))
                 swh.append(float(data[4]))
             except ValueError:
-                time2.append(dt.datetime.strptime(data[0] + " " + data[1], "%d-%b-%Y %H:%M:%S.%f"))
+                time2.append(parser.parse(data[0] + " " + data[1]))
                 ssh.append(float(data[2]))
                 benchmark.append(float(data[3]))
                 backscatter.append(float(data[4]))

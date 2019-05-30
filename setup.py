@@ -23,7 +23,7 @@ setup(
     description="Set of tools for time series analysis of Altimetry data calibration and validation"
                 " at Harvest and Catalina ",
     long_description=read('README.rst'),
-    scripts=['bin/time-series'],
+    scripts=['bin/calval-timeseries'],
     license='custom',
     url='https://github.com/ccarocean/calval-timeseries',
     packages=find_packages(),

@@ -22,7 +22,8 @@ def ovavg(ovfile, loc, outDir, rawdir):
         J2000 = dt.datetime(2000, 1, 1, 12)
         ovflight_times = [J2000 + dt.timedelta(seconds=i) for i in ov_secs]
     else:
-        ovflight_times = [parser.parse(ovflight_times['date'][i] + " " + ovflight_times['time'][i]) for i in range(len(ovflight_times))]
+        ovflight_times = [parser.parse(ovflight_times['date'][i] + " " + ovflight_times['time'][i])
+                          for i in range(len(ovflight_times))]
     timedelta_2h = dt.timedelta(hours=2)
     timedelta_1100s = dt.timedelta(seconds=1100)
     for i in ovflight_times:
