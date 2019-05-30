@@ -33,7 +33,7 @@ def raw_lidar(ssh, lid, corr, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = reg.linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -76,7 +76,7 @@ def raw_acoust(ssh, corr, acoust, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = reg.linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -120,7 +120,7 @@ def raw_avg(ssh, corr, lid, acoust, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = reg.linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 

@@ -1,8 +1,10 @@
-import sys
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as pltdt
 import datetime as dt
+from . import reg
 
 
 ########################## Create LiDAR time series ##########################################################
@@ -30,7 +32,7 @@ def raw_lidar(ssh, benchmark, lid, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -73,7 +75,7 @@ def corr_lidar(ssh, benchmark, lid, amp, wind, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -116,7 +118,7 @@ def raw_bubbler(ssh, benchmark, bub, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -162,7 +164,7 @@ def corr_bubbler(ssh, benchmark, bub, time, swh, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -204,7 +206,7 @@ def raw_radar(ssh, benchmark, rad, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -249,7 +251,7 @@ def corr_radar(ssh, benchmark, rad, swh, wind, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -293,7 +295,7 @@ def avg_raw(ssh, benchmark, rad, bub, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 
@@ -344,7 +346,7 @@ def avg_corr(ssh, benchmark, rad, bub, swh, wind, time, plotfile):
     xnum = [(x[0] - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
-    yfit, b0, b1, r2 = linreg(xnum[not_ind], data[not_ind])
+    yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
     ax.plot_date(pltdt.date2num(time[not_ind]), yfit, 'b--',
                  label='Linear Fit, R$^2$=' + str(round(r2, 6)) + ", b$_1$=" + str(round(b1, 3)) + " mm/yr")
 

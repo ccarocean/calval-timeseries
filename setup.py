@@ -16,7 +16,7 @@ def read_version(filename):
 
 
 setup(
-    name='time-series',
+    name='calval-timeseries',
     version=read_version('timeseries/__init__.py'),
     author="Adam Dodge",
     author_email="Adam.Dodge@Colorado.edu",
@@ -25,11 +25,14 @@ setup(
     long_description=read('README.rst'),
     scripts=['bin/time-series'],
     license='custom',
-    url='https://github.com/ccarocean/altimetry-calval-timeseries',
+    url='https://github.com/ccarocean/calval-timeseries',
     packages=find_packages(),
     install_requires=[
         "numpy",
-        "matplotlib"
+        "matplotlib",
+        "pandas",
+        "scipy",
+        "python-dateutil"
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

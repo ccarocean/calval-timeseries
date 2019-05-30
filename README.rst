@@ -1,7 +1,7 @@
 CalVal Time Series at Harvest and Catalina
 ==========================================
 
-Title: time-series
+Title: calval-timeseries
 
 Options
 -------
