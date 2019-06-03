@@ -23,12 +23,12 @@ def load_cata(f_lid, f_sat, ind_lid):
             if i== 0:
                 indTime = data.index("time")
                 indLid = data.index(ind_lid)
-                indAmp = data.index("l_rpw")
+                indRpw = data.index("l_rpw")
                 indAcoust = data.index("acoust")
             else:
                 time.append(dt.datetime.strptime(data[indTime], "%Y-%m-%d %H:%M:%S.%f"))
                 lid.append(float(data[indLid]))
-                rpw.append(float(data[indAmp]))
+                rpw.append(float(data[indRpw]))
                 acoust.append(float(data[indAcoust]))
             i = i + 1
 
@@ -91,13 +91,13 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
             if i == 0:
                 indTime = data.index("time")
                 indLid = data.index(ind_lid)
-                indAmp = data.index("l_rpw")
+                indRpw = data.index("l_rpw")
                 indBub = data.index("bub")
                 indRad = data.index("rad")
             else:
                 time.append(dt.datetime.strptime(data[indTime], "%Y-%m-%d %H:%M:%S.%f"))
                 lid.append(float(data[indLid]))
-                rpw.append(float(data[indAmp]))
+                rpw.append(float(data[indRpw]))
                 bub.append(float(data[indBub]))
                 rad.append(float(data[indRad]))
             i = i + 1

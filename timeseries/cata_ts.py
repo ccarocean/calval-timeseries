@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as pltdt
 import datetime as dt
 from . import reg
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
+
 
 
 ########################## Create LiDAR time series ##########################################################
