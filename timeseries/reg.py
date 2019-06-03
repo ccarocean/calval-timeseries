@@ -4,7 +4,10 @@ import numpy as np
 ########################## Regression ######################################################################
 def linreg_ts(x, y):
     p = np.polyfit(x, y, 1)
-    b_0, b_1 = p[1][0], p[0][0]
+    try:
+        b_0, b_1 = p[1][0], p[0][0]
+    except IndexError:
+        b_0, b_1 = p[1], p[0]
     pred = b_0 + b_1*x
     SSR = np.sum(np.square(pred-np.mean(y)))
     SSTO = np.sum(np.square(y-np.mean(y)))

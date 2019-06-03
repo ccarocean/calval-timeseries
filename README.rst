@@ -55,5 +55,5 @@ This program is written to allow for the creation of Calibration/Validation time
 and Catalina Island CalVal locations. At harvest, it creates time series for the LiDAR, Bubbler, and Radar datasets,
 as well as their corrected datasets and the average between the radar and bubbler. At Catalina, it creates time series
 for the LiDAR and LA acoustic datasets, as well as a linear interpolation between the two to get a measurement in the
-middle of the san pedro channel. 
+middle of the san pedro channel.
 

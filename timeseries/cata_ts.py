@@ -8,13 +8,19 @@ from . import reg
 
 
 ########################## Create LiDAR time series ##########################################################
-def raw_lidar(ssh, lid, corr, time, plotfile):
+def raw_lidar(ssh, lid, corr, backscatter, time, plotfile, bs_max):
     # Perform calculations, indices
     data = np.add(np.subtract(ssh, corr), lid * 1000)
     indnan = np.argwhere(np.invert(np.isnan(data)))
     data = data[indnan]
     data = data - np.mean(data)
     time = time[indnan]
+    backscatter = backscatter[indnan]
+
+    # Remove high backscatter
+    ind_lowbs = np.where(backscatter < bs_max)
+    data = data[ind_lowbs]
+    time = time[ind_lowbs]
 
     # Find Outliers
     out_ind = np.argwhere((data > 3 * np.std(data) + np.mean(data)) | (data < -3 * np.std(data) + np.mean(data)))[:, 0]
@@ -30,7 +36,7 @@ def raw_lidar(ssh, lid, corr, time, plotfile):
 
     # Fit data
     base = dt.datetime(2016, 1, 1)
-    xnum = [(x[0] - base).total_seconds() for x in time]
+    xnum = [(x - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
     yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
@@ -51,13 +57,19 @@ def raw_lidar(ssh, lid, corr, time, plotfile):
 
 
 ########################## Create Acoustic time series ##########################################################
-def raw_acoust(ssh, corr, acoust, time, plotfile):
+def raw_acoust(ssh, corr, acoust, backscatter, time, plotfile, bs_max):
     # Perform calculations, indices
     data = np.subtract(np.subtract(ssh, corr), acoust * 1000)
     indnan = np.argwhere(np.invert(np.isnan(data)))
     data = data[indnan]
     data = data - np.mean(data)
     time = time[indnan]
+    backscatter = backscatter[indnan]
+
+    # Remove high backscatter
+    ind_lowbs = np.where(backscatter < bs_max)
+    data = data[ind_lowbs]
+    time = time[ind_lowbs]
 
     # Find Outliers
     out_ind = np.argwhere((data > 3 * np.std(data) + np.mean(data)) | (data < -3 * np.std(data) + np.mean(data)))[:, 0]
@@ -73,7 +85,7 @@ def raw_acoust(ssh, corr, acoust, time, plotfile):
 
     # Fit data
     base = dt.datetime(2016, 1, 1)
-    xnum = [(x[0] - base).total_seconds() for x in time]
+    xnum = [(x - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
     yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])
@@ -94,7 +106,7 @@ def raw_acoust(ssh, corr, acoust, time, plotfile):
 
 
 ########################## Create Average time series ##########################################################
-def raw_avg(ssh, corr, lid, acoust, time, plotfile):
+def raw_avg(ssh, corr, lid, acoust, backscatter, time, plotfile, bs_max):
     # Perform calculations, indices
     avg = np.subtract(lid * 1000, acoust * 1000) / 2
     data = np.add(np.subtract(ssh, corr), avg)
@@ -102,6 +114,12 @@ def raw_avg(ssh, corr, lid, acoust, time, plotfile):
     data = data[indnan]
     data = data - np.mean(data)
     time = time[indnan]
+    backscatter = backscatter[indnan]
+
+    # Remove high backscatter
+    ind_lowbs = np.where(backscatter < bs_max)
+    data = data[ind_lowbs]
+    time = time[ind_lowbs]
 
     # Find Outliers
     out_ind = np.argwhere((data > 3 * np.std(data) + np.mean(data)) | (data < -3 * np.std(data) + np.mean(data)))[:, 0]
@@ -117,7 +135,7 @@ def raw_avg(ssh, corr, lid, acoust, time, plotfile):
 
     # Fit data
     base = dt.datetime(2016, 1, 1)
-    xnum = [(x[0] - base).total_seconds() for x in time]
+    xnum = [(x - base).total_seconds() for x in time]
     xnum = np.array(xnum) / (3600 * 24 * 365)
 
     yfit, b0, b1, r2 = reg.linreg_ts(xnum[not_ind], data[not_ind])

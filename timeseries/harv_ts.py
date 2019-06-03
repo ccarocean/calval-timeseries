@@ -49,11 +49,11 @@ def raw_lidar(ssh, benchmark, lid, time, plotfile):
     print("Raw LiDAR Time series saved to:", plotfile)
 
 
-def corr_lidar(ssh, benchmark, lid, amp, wind, time, plotfile):
-    # 'c2-.0054*c3+.0000087*c4' - Wind then amplitude
+def corr_lidar(ssh, benchmark, lid, rpw, wind, time, plotfile):
+    # 'c2-.0054*c3+.0000087*c4' - Wind then received pulse width
     # Perform calculations, indices
     data = (np.add(np.subtract(np.add(np.subtract(ssh, benchmark), lid), .0054 * wind),
-                   .0000087 * amp) - 6.85) * 1000 - 25 - 88.25
+                   .0000087 * rpw) - 6.85) * 1000 - 25 - 88.25
     indnan = np.argwhere(np.invert(np.isnan(data)))
     data = data[indnan]
     time = time[indnan]

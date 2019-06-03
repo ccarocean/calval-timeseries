@@ -14,7 +14,7 @@ def load_cata(f_lid, f_sat, ind_lid):
     # Load LiDAR Data
     time = []
     lid = []
-    amp = []
+    rpw = []
     acoust = []
     i = 0
     with open(f_lid, 'r') as lidarfile:
@@ -23,12 +23,12 @@ def load_cata(f_lid, f_sat, ind_lid):
             if i== 0:
                 indTime = data.index("time")
                 indLid = data.index(ind_lid)
-                indAmp = data.index("l_amp")
+                indAmp = data.index("l_rpw")
                 indAcoust = data.index("acoust")
             else:
                 time.append(dt.datetime.strptime(data[indTime], "%Y-%m-%d %H:%M:%S.%f"))
                 lid.append(float(data[indLid]))
-                amp.append(float(data[indAmp]))
+                rpw.append(float(data[indAmp]))
                 acoust.append(float(data[indAcoust]))
             i = i + 1
 
@@ -37,6 +37,8 @@ def load_cata(f_lid, f_sat, ind_lid):
     time2 = []
     ssh = []
     corr = []
+    swh = []
+    backscatter = []
     with open(f_sat, 'r') as satfile:
         for line in satfile:
             data = [x.strip() for x in line.split()]
@@ -44,10 +46,14 @@ def load_cata(f_lid, f_sat, ind_lid):
                 time2.append(tJ2000 + dt.timedelta(seconds=float(data[0])))
                 ssh.append(float(data[1]))
                 corr.append(float(data[2]))
+                swh.append(float(data[3]))
+                backscatter.append(float(data[4]))
             except ValueError:
                 time2.append(parser.parse(data[0] + " " + data[1]))
                 ssh.append(float(data[2]))
                 corr.append(float(data[3]))
+                swh.append(float(data[4]))
+                backscatter.append(float(data[5]))
 
     # Ensure dates are the same
     try:
@@ -59,13 +65,15 @@ def load_cata(f_lid, f_sat, ind_lid):
     # Convert to numpy arrays
     time = np.asarray(time)
     lid = np.asarray(lid)
-    amp = np.asarray(amp)
+    rpw = np.asarray(rpw)
     ssh = np.asarray(ssh)
     acoust = np.asarray(acoust)
+    swh = np.array(swh)
+    backscatter = np.array(backscatter)
 
     # Return Data
     print("Data loaded successfully.")
-    return time, lid, amp, ssh, acoust, corr
+    return time, lid, rpw, ssh, acoust, corr, swh, backscatter
 
 
 ########################## Load Data #######################################################################
@@ -75,7 +83,7 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
     lid = []
     bub = []
     rad = []
-    amp = []
+    rpw = []
     i = 0
     with open(f_lid, 'r') as lidarfile:
         for line in lidarfile:
@@ -83,13 +91,13 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
             if i == 0:
                 indTime = data.index("time")
                 indLid = data.index(ind_lid)
-                indAmp = data.index("l_amp")
+                indAmp = data.index("l_rpw")
                 indBub = data.index("bub")
                 indRad = data.index("rad")
             else:
                 time.append(dt.datetime.strptime(data[indTime], "%Y-%m-%d %H:%M:%S.%f"))
                 lid.append(float(data[indLid]))
-                amp.append(float(data[indAmp]))
+                rpw.append(float(data[indAmp]))
                 bub.append(float(data[indBub]))
                 rad.append(float(data[indRad]))
             i = i + 1
@@ -148,7 +156,7 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
     # Convert to numpy arrays
     time = np.asarray(time)
     lid = np.asarray(lid)
-    amp = np.asarray(amp)
+    rpw = np.asarray(rpw)
     bub = np.asarray(bub)
     rad = np.asarray(rad)
     ssh = np.asarray(ssh)
@@ -159,14 +167,14 @@ def load_harv(f_lid, f_sat, f_wind, ind_lid):
 
     # Return Data
     print("Data loaded successfully.")
-    return time, lid, amp, rad, bub, ssh, benchmark, backscatter, swh, wind
+    return time, lid, rpw, rad, bub, ssh, benchmark, backscatter, swh, wind
 
 ########## Load Raw Data #######################################################################################
 def load_raw(d, rawdir):
     """ Function to determine filetype and load raw LiDAR data. """
     fgzbin = d.strftime(rawdir + '/uls_%Y%m%d.bin.gz')
     fxzbin = d.strftime(rawdir + '/uls_%Y%m%d.bin.xz')
-    dtype = np.dtype([(str('time'), np.uint32), (str('range'), np.uint32), (str('amp'), np.uint32)])
+    dtype = np.dtype([(str('time'), np.uint32), (str('range'), np.uint32), (str('rpw'), np.uint32)])
     if os.path.isfile(fgzbin):
         return load_gzbin(fgzbin, dtype)
     elif os.path.isfile(fxzbin):
@@ -187,7 +195,7 @@ def load_gzbin(f, dtype):
         filesize = len(file_content)
         data = np.frombuffer(file_content, dtype, count=filesize // 12)  # returns data from file
         data = {'time': data['time'].astype(float) / 10000, 'range': data['range'].astype(float) / 1000,
-                'amp': data['amp']}  # data organization
+                'rpw': data['rpw']}  # data organization
         data = pd.DataFrame.from_dict(data)  # creates dataframe
         data.set_index('time', inplace=True, drop=True)  # sets index as time
         print('LiDAR Data loaded from:', f[-19:])
@@ -208,7 +216,7 @@ def load_xzbin(f, dtype):
         filesize = len(file_content)
         data = np.frombuffer(file_content, dtype, count=filesize // 12)  # returns data from file
         data = {'time': data['time'].astype(float) / 10000, 'range': data['range'].astype(float) / 1000,
-                'amp': data['amp']}  # data organization
+                'rpw': data['rpw']}  # data organization
         data = pd.DataFrame.from_dict(data)  # creates dataframe
         data.set_index('time', inplace=True, drop=True)  # sets index as time
         print('LiDAR Data loaded from:', f[-19:])
@@ -221,9 +229,9 @@ def load_xzbin(f, dtype):
 def load_output(d, loc, outdir):
     """ Function to load output data. """
     names_cata_saved = ['time', 'A1', 'A1_t1', 'A1_t2', 'B1', 'E1', 'F1', 'L1_1', 'L1_2', 'P6', 'U1',
-                        'W1', 'l', 'l_Hs', 'l_amp', 'l_max', 'l_mean', 'l_median', 'l_min', 'l_n', 'l_skew', 'l_std']
+                        'W1', 'l', 'l_Hs', 'l_rpw', 'l_max', 'l_mean', 'l_median', 'l_min', 'l_n', 'l_skew', 'l_std']
     names_harv_saved = ['time', 'D1', 'F1', 'L1_1', 'L1_2', 'N1_1', 'N1_1_ssh', 'N1_2', 'P6', 'U1', 'W1',
-                        'Y1_1', 'Y1_1_ssh', 'Y1_2', 'l', 'l_Hs', 'l_amp', 'l_max', 'l_mean', 'l_median', 'l_min',
+                        'Y1_1', 'Y1_1_ssh', 'Y1_2', 'l', 'l_Hs', 'l_rpw', 'l_max', 'l_mean', 'l_median', 'l_min',
                         'l_n', 'l_skew', 'l_ssh', 'l_std']
     f = os.path.join(outdir, loc + '_' + d.strftime('%Y%m') + '.csv')
     if loc == 'harv':

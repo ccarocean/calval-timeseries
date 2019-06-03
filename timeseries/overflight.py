@@ -13,17 +13,13 @@ def ovavg(ovfile, loc, outDir, rawdir):
     print('-------------------------------------')
     ovflight_times = pd.read_csv(ovfile, names=['date', 'time'], usecols=[0, 1], sep="\s+")
     try:
-        ov_secs = [float(ovflight_times['date'][i]) for i in range(len(ovflight_times))]
-        J2000_flag = True
-    except (TypeError, ValueError):
-        J2000_flag = False
-
-    if J2000_flag:
-        J2000 = dt.datetime(2000, 1, 1, 12)
-        ovflight_times = [J2000 + dt.timedelta(seconds=i) for i in ov_secs]
-    else:
         ovflight_times = [parser.parse(ovflight_times['date'][i] + " " + ovflight_times['time'][i])
                           for i in range(len(ovflight_times))]
+    except (TypeError, ValueError):
+        ov_secs = [float(ovflight_times['date'][i]) for i in range(len(ovflight_times))]
+        J2000 = dt.datetime(2000, 1, 1, 12)
+        ovflight_times = [J2000 + dt.timedelta(seconds=i) for i in ov_secs]
+
     timedelta_2h = dt.timedelta(hours=2)
     timedelta_1100s = dt.timedelta(seconds=1100)
     for i in ovflight_times:
@@ -70,28 +66,28 @@ def ovavg(ovfile, loc, outDir, rawdir):
             t2 = ((t + timedelta_2h) - day).total_seconds()
             ind = (data.index >= t1) & (data.index <= t2)
             r_range_2h = data['range'][ind]
-            r_amp_2h = data['amp'][ind]
+            r_rpw_2h = data['rpw'][ind]
             time_2h = data.index[ind]
-            std_int = np.std(r_range_2h)
-            mean_int = np.mean(r_range_2h)
-            ind_good = ((np.abs(r_range_2h - mean_int)) < (5 * std_int))
-            r_range_2h = r_range_2h[ind_good]
-            r_amp_2h = r_amp_2h[ind_good]
-            time_2h = time_2h[ind_good]
+            # std_int = np.std(r_range_2h)
+            # mean_int = np.mean(r_range_2h)
+            # ind_good = ((np.abs(r_range_2h - mean_int)) < (5 * std_int))
+            # r_range_2h = r_range_2h[ind_good]
+            # r_rpw_2h = r_rpw_2h[ind_good]
+            # time_2h = time_2h[ind_good]
 
             # LiDAR Averaging for 1100s
             t1 = ((t - timedelta_1100s) - day).total_seconds()
             t2 = ((t + timedelta_1100s) - day).total_seconds()
             ind = (data.index >= t1) & (data.index <= t2)
             r_range_1100 = data['range'][ind]
-            r_amp_1100 = data['amp'][ind]
+            r_rpw_1100 = data['rpw'][ind]
             time_1100 = data.index[ind]
-            std_int = np.std(r_range_1100)
-            mean_int = np.mean(r_range_1100)
-            ind_good = ((np.abs(r_range_1100 - mean_int)) < (5 * std_int))
-            r_range_1100 = r_range_1100[ind_good]
-            r_amp_1100 = r_amp_1100[ind_good]
-            time_1100 = time_1100[ind_good]
+            # std_int = np.std(r_range_1100)
+            # mean_int = np.mean(r_range_1100)
+            # ind_good = ((np.abs(r_range_1100 - mean_int)) < (5 * std_int))
+            # r_range_1100 = r_range_1100[ind_good]
+            # r_rpw_1100 = r_rpw_1100[ind_good]
+            # time_1100 = time_1100[ind_good]
 
             l_r = len(r_range_1100)
             if l_r > 0:
@@ -103,12 +99,12 @@ def ovavg(ovfile, loc, outDir, rawdir):
                 data_ov.loc[t, 'l_n'] = l_r
                 data_ov.loc[t, 'l_min'] = np.min(r_range_1100)
                 data_ov.loc[t, 'l_max'] = np.max(r_range_1100)
-                data_ov.loc[t, 'l_amp'] = np.mean(r_amp_1100)
+                data_ov.loc[t, 'l_rpw'] = np.mean(r_rpw_1100)
                 data_ov.loc[t, 'l_quad2h'] = reg.quadreg_lid(time_2h, r_range_2h, t, day)
                 data_ov.loc[t, 'l_lin1100s'] = reg.linreg_lid(time_1100, r_range_1100, t, day)
             else:
                 print('No LiDAR data for this overflight.')
-            del r_range_2h, r_amp_2h
+            del r_range_2h, r_rpw_2h
 
         # Bubbler and Radar Data
         filedata = loading.load_output(t, loc, outDir)
@@ -129,39 +125,39 @@ def ovavg(ovfile, loc, outDir, rawdir):
             lid = filedata['l_mean'][ind].astype(float)
             time = filedata.index[ind]
 
-            std_bub = np.std(bub)
-            std_rad = np.std(rad)
-            std_lid = np.std(lid)
-            mean_bub = np.mean(bub)
-            mean_rad = np.mean(rad)
-            mean_lid = np.mean(lid)
-            ind_good_bub = ((np.abs(bub - mean_bub)) < (5 * std_bub))
-            ind_good_rad = ((np.abs(rad - mean_rad)) < (5 * std_rad))
-            ind_good_lid = ((np.abs(lid - mean_lid)) < (5 * std_lid))
-
-            bub = bub[ind_good_bub]
-            timebub = time[ind_good_bub]
-            rad = rad[ind_good_rad]
-            timerad = time[ind_good_rad]
-            lid = lid[ind_good_lid]
-            time_lid = time[ind_good_lid]
+            # std_bub = np.std(bub)
+            # std_rad = np.std(rad)
+            # std_lid = np.std(lid)
+            # mean_bub = np.mean(bub)
+            # mean_rad = np.mean(rad)
+            # mean_lid = np.mean(lid)
+            # ind_good_bub = ((np.abs(bub - mean_bub)) < (5 * std_bub))
+            # ind_good_rad = ((np.abs(rad - mean_rad)) < (5 * std_rad))
+            # ind_good_lid = ((np.abs(lid - mean_lid)) < (5 * std_lid))
+            #
+            # bub = bub[ind_good_bub]
+            # timebub = time[ind_good_bub]
+            # rad = rad[ind_good_rad]
+            # timerad = time[ind_good_rad]
+            # lid = lid[ind_good_lid]
+            # time_lid = time[ind_good_lid]
 
             l_r = len(rad)
             l_b = len(bub)
             l_l = len(lid)
             if l_b > 0:
                 print('Bubbler Data Points (+-2h window): ', l_b)
-                data_ov.loc[t, 'bub'] = reg.quadreg_lid(timebub, bub, t, day)
+                data_ov.loc[t, 'bub'] = reg.quadreg_lid(time, bub, t, day)
             else:
                 print('No Bubbler data for this overflight.')
             if l_r > 0:
                 print('Radar Data Points (+-2h window): ', l_r)
-                data_ov.loc[t, 'rad'] = reg.quadreg_lid(timerad, rad, t, day)
+                data_ov.loc[t, 'rad'] = reg.quadreg_lid(time, rad, t, day)
             else:
                 print('No Radar data for this overflight.')
             if l_l > 0:
                 print('LiDAR 6 minute Data Points (+-2h window): ', l_l)
-                data_ov.loc[t, 'l_6m_quad2h'] = reg.quadreg_lid(time_lid, lid, t, day)
+                data_ov.loc[t, 'l_6m_quad2h'] = reg.quadreg_lid(time, lid, t, day)
             else:
                 print('No 6 minute LiDAR data for this overflight.')
 
@@ -172,27 +168,27 @@ def ovavg(ovfile, loc, outDir, rawdir):
             acoust = filedata['A1'][ind].astype(float)
             lid = filedata['l_mean'][ind].astype(float)
             time = filedata.index[ind]
-            std_acoust = np.std(acoust)
-            mean_acoust = np.mean(acoust)
-            std_lid = np.std(lid)
-            mean_lid = np.mean(lid)
-            ind_good_acoust = ((np.abs(acoust - mean_acoust)) < (5 * std_acoust))
-            ind_good_lid = ((np.abs(lid - mean_lid)) < (5 * std_lid))
+            # std_acoust = np.std(acoust)
+            # mean_acoust = np.mean(acoust)
+            # std_lid = np.std(lid)
+            # mean_lid = np.mean(lid)
+            # ind_good_acoust = ((np.abs(acoust - mean_acoust)) < (5 * std_acoust))
+            # ind_good_lid = ((np.abs(lid - mean_lid)) < (5 * std_lid))
 
-            acoust = acoust[ind_good_acoust]
-            time_acoust = time[ind_good_acoust]
-            lid = lid[ind_good_lid]
-            time_lid = time[ind_good_lid]
+            # acoust = acoust[ind_good_acoust]
+            # time_acoust = time[ind_good_acoust]
+            # lid = lid[ind_good_lid]
+            # time_lid = time[ind_good_lid]
             l_a = len(acoust)
             l_l = len(lid)
             if l_a > 0:
-                data_ov.loc[t, 'acoust'] = reg.quadreg_lid(time_acoust, acoust, t, day)
+                data_ov.loc[t, 'acoust'] = reg.quadreg_lid(time, acoust, t, day)
                 print('Acoustic Data Points (+-2h window): ', l_a)
             else:
                 print('No Acoustic data for this overflight.')
             if l_l > 0:
                 print('LiDAR 6 minute Data Points (+-2h window): ', l_l)
-                data_ov.loc[t, 'l_6m_quad2h'] = reg.quadreg_lid(time_lid, lid, t, day)
+                data_ov.loc[t, 'l_6m_quad2h'] = reg.quadreg_lid(time, lid, t, day)
             else:
                 print('No 6 minute LiDAR data for this overflight.')
         print('-------------------------------------')

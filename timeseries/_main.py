@@ -66,10 +66,10 @@ def main():
         plotfile_corr_rad = os.path.join(dir_ts, 'harv', 'TS_CorrRadar.png')
         plotfile_avg_raw = os.path.join(dir_ts, 'harv', 'TS_RawAverage.png')
         plotfile_avg_corr = os.path.join(dir_ts, 'harv', 'TS_CorrAverage.png')
-        time, lid, amp, rad, bub, ssh, benchmark, backscatter, swh, wind = \
+        time, lid, rpw, rad, bub, ssh, benchmark, backscatter, swh, wind = \
             loading.load_harv(f_lid_harv, args.harv, f_wind, args.lidarindex)
         harv_ts.raw_lidar(ssh, benchmark, lid, time, plotfile_raw_lid)
-        harv_ts.corr_lidar(ssh, benchmark, lid, amp, wind, time, plotfile_corr_lid)
+        harv_ts.corr_lidar(ssh, benchmark, lid, rpw, wind, time, plotfile_corr_lid)
         harv_ts.raw_bubbler(ssh, benchmark, bub, time, plotfile_raw_bub)
         harv_ts.corr_bubbler(ssh, benchmark, bub, time, swh, plotfile_corr_bub)
         harv_ts.raw_radar(ssh, benchmark, rad, time, plotfile_raw_rad)
@@ -94,8 +94,8 @@ def main():
         plotfile_lid = os.path.join(dir_ts, 'cata', 'TS_RawLiDAR_Catalina.png')
         plotfile_acoust = os.path.join(dir_ts, 'cata', 'TS_RawAcoust_LA.png')
         plotfile_avg = os.path.join(dir_ts, 'cata', 'TS_RawAvg_Catalina.png')
-        time, lid, amp, ssh, acoust, corr = loading.load_cata(f_lid_cata, args.cata, args.lidarindex)
-
-        cata_ts.raw_lidar(ssh, lid, corr, time, plotfile_lid)
-        cata_ts.raw_acoust(ssh, corr, acoust, time, plotfile_acoust)
-        cata_ts.raw_avg(ssh, corr, lid, acoust, time, plotfile_avg)
+        bs_max = 15
+        time, lid, rpw, ssh, acoust, corr, swh, backscatter = loading.load_cata(f_lid_cata, args.cata, args.lidarindex)
+        cata_ts.raw_lidar(ssh, lid, corr, backscatter, time, plotfile_lid, bs_max)
+        cata_ts.raw_acoust(ssh, corr, acoust, backscatter, time, plotfile_acoust, bs_max)
+        cata_ts.raw_avg(ssh, corr, lid, acoust, backscatter, time, plotfile_avg, bs_max)
